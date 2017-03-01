@@ -1,0 +1,9 @@
+{
+  "generator-ndx": {
+    "filters": {
+      "appType": "cli",
+      "appName": "ndx-auth-client"
+    },
+    "appname": "github"
+  }
+}
