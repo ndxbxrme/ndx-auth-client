@@ -1,6 +1,6 @@
 'use strict'
 
-angular.module 'ndx'
+angular.module 'ndx', []
 .factory 'auth', ($http, $q, $state) ->
   user = null
   loading = false

@@ -1,6 +1,6 @@
 (function() {
   'use strict';
-  angular.module('ndx').factory('auth', function($http, $q, $state) {
+  angular.module('ndx', []).factory('auth', function($http, $q, $state) {
     var checkRoles, getUserPromise, hasRole, loading, redirect, user;
     user = null;
     loading = false;
