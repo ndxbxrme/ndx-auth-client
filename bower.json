@@ -2,7 +2,7 @@
   "name": "ndx-auth",
   "version": "0.0.1",
   "description": "clientside user authentication for ndx framework apps",
-  "main": "build/index.js",
+  "main": "build/ndx-auth.js",
   "authors": [
     "ndxbxrme <lewis_the_cat@hotmail.com>"
   ],
