@@ -63,7 +63,7 @@
       }
       return allgood;
     };
-    checkRoles = function(role) {
+    checkRoles = function(role, isAnd) {
       var getRole, i, len, r, rolesToCheck, truth;
       rolesToCheck = [];
       getRole = function(role) {
@@ -86,21 +86,25 @@
         }
       };
       getRole(role);
-      truth = false;
+      truth = isAnd ? true : false;
       for (i = 0, len = rolesToCheck.length; i < len; i++) {
         r = rolesToCheck[i];
-        truth = truth || hasRole(r);
+        if (isAnd) {
+          truth = truth && hasRole(r);
+        } else {
+          truth = truth || hasRole(r);
+        }
       }
       return truth;
     };
     return {
-      getPromise: function(role) {
+      getPromise: function(role, isAnd) {
         var defer;
         defer = $q.defer();
         getUserPromise().then(function() {
           var truth;
           if (role) {
-            truth = checkRoles(role);
+            truth = checkRoles(role, isAnd);
             if (truth) {
               return defer.resolve(user);
             } else {
@@ -131,8 +135,17 @@
           return checkRoles(role);
         }
       },
+      checkAllRoles: function(role) {
+        if (user) {
+          return checkRoles(role, true);
+        }
+      },
       redirect: redirect
     };
+  }).run(function($rootScope, auth) {
+    var root;
+    root = Object.getPrototypeOf($rootScope);
+    return root.auth = auth;
   });
 
 }).call(this);

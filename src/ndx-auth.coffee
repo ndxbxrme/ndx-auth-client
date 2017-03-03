@@ -44,7 +44,7 @@ module.factory 'auth', ($http, $q, $state) ->
           allgood = false
           break
     allgood
-  checkRoles = (role) ->
+  checkRoles = (role, isAnd) ->
     rolesToCheck = []
     getRole = (role) ->
       type = Object.prototype.toString.call role
@@ -58,16 +58,19 @@ module.factory 'auth', ($http, $q, $state) ->
         if rolesToCheck.indexOf(role) is -1
           rolesToCheck.push role
     getRole role
-    truth = false
+    truth = if isAnd then true else false
     for r in rolesToCheck
-      truth = truth or hasRole(r)
+      if isAnd
+        truth = truth and hasRole(r)
+      else
+        truth = truth or hasRole(r)
     truth
-  getPromise: (role) ->
+  getPromise: (role, isAnd) ->
     defer = $q.defer()
     getUserPromise()
     .then ->
       if role
-        truth = checkRoles role
+        truth = checkRoles role, isAnd
         if truth
           defer.resolve user
         else
@@ -89,4 +92,10 @@ module.factory 'auth', ($http, $q, $state) ->
   checkRoles: (role) ->
     if user
       checkRoles role
+  checkAllRoles: (role) ->
+    if user
+      checkRoles role, true
   redirect: redirect
+.run ($rootScope, auth) ->
+  root = Object.getPrototypeOf $rootScope
+  root.auth = auth
