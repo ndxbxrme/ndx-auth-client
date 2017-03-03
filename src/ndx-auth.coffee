@@ -1,7 +1,10 @@
 'use strict'
-
-angular.module 'ndx', []
-.factory 'auth', ($http, $q, $state) ->
+module = null
+try
+  module = angular.module 'ndx'
+catch e
+  module = angular.module 'ndx', []
+module.factory 'auth', ($http, $q, $state) ->
   user = null
   loading = false
   redirect = 'dashboard'
