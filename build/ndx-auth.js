@@ -26,7 +26,7 @@
       } else {
         $http.post('/api/refresh-login').then(function(data) {
           loading = false;
-          if (data && data.data !== 'error') {
+          if (data && data.data && data.data !== 'error') {
             user = data.data;
             return defer.resolve(user);
           } else {

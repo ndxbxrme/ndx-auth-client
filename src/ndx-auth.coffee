@@ -18,7 +18,7 @@ module.factory 'auth', ($http, $q, $state) ->
       $http.post '/api/refresh-login'
       .then (data) ->
         loading = false
-        if data and data.data isnt 'error'
+        if data and data.data and data.data isnt 'error'
           user = data.data
           defer.resolve user
         else 
