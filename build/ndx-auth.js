@@ -11,7 +11,7 @@
     module = angular.module('ndx', []);
   }
 
-  module.factory('auth', function($http, $q, $state) {
+  module.factory('auth', function($http, $q, $state, $window) {
     var checkRoles, getUserPromise, hasRole, loading, redirect, user;
     user = null;
     loading = false;
@@ -140,7 +140,10 @@
           return checkRoles(role, true);
         }
       },
-      redirect: redirect
+      redirect: redirect,
+      logOut: function() {
+        return $window.location.href = '/api/logout';
+      }
     };
   }).run(function($rootScope, auth) {
     var root;

@@ -4,7 +4,7 @@ try
   module = angular.module 'ndx'
 catch e
   module = angular.module 'ndx', []
-module.factory 'auth', ($http, $q, $state) ->
+module.factory 'auth', ($http, $q, $state, $window) ->
   user = null
   loading = false
   redirect = 'dashboard'
@@ -96,6 +96,8 @@ module.factory 'auth', ($http, $q, $state) ->
     if user
       checkRoles role, true
   redirect: redirect
+  logOut: ->
+    $window.location.href = '/api/logout'
 .run ($rootScope, auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = auth
