@@ -127,6 +127,9 @@
       getUser: function() {
         return user;
       },
+      loggedIn: function() {
+        return user || $state.current.name === 'invited' || $state.current.name === 'forgot';
+      },
       loading: function() {
         return loading;
       },

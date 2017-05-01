@@ -87,6 +87,8 @@ module.factory 'auth', ($http, $q, $state, $window) ->
     defer.promise
   getUser: ->
     user
+  loggedIn: ->
+    user or $state.current.name is 'invited' or $state.current.name is 'forgot'
   loading: ->
     loading
   checkRoles: (role) ->
