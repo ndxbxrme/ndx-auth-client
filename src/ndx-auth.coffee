@@ -4,7 +4,7 @@ try
   module = angular.module 'ndx'
 catch e
   module = angular.module 'ndx', []
-module.factory 'auth', ($http, $q, $state, $window) ->
+module.factory 'auth', ($http, $q, $state, $window, $injector) ->
   user = null
   loading = false
   redirect = 'dashboard'
@@ -20,6 +20,11 @@ module.factory 'auth', ($http, $q, $state, $window) ->
         loading = false
         if data and data.data and data.data isnt 'error'
           user = data.data
+          if $injector.has 'socket'
+            socket = $injector.get 'socket'
+            socket.emit 'user', user
+            socket.on 'connect', ->
+              socket.emit 'user', user
           defer.resolve user
         else 
           user = null

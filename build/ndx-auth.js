@@ -11,7 +11,7 @@
     module = angular.module('ndx', []);
   }
 
-  module.factory('auth', function($http, $q, $state, $window) {
+  module.factory('auth', function($http, $q, $state, $window, $injector) {
     var checkRoles, getUserPromise, hasRole, loading, redirect, user;
     user = null;
     loading = false;
@@ -25,9 +25,17 @@
         loading = false;
       } else {
         $http.post('/api/refresh-login').then(function(data) {
+          var socket;
           loading = false;
           if (data && data.data && data.data !== 'error') {
             user = data.data;
+            if ($injector.has('socket')) {
+              socket = $injector.get('socket');
+              socket.emit('user', user);
+              socket.on('connect', function() {
+                return socket.emit('user', user);
+              });
+            }
             return defer.resolve(user);
           } else {
             user = null;
