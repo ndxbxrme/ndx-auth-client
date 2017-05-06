@@ -138,6 +138,9 @@
         });
         return defer.promise;
       },
+      clearUser: function() {
+        return user = null;
+      },
       getUser: function() {
         return user;
       },

@@ -96,6 +96,8 @@ module.factory 'auth', ($http, $q, $state, $window, $injector) ->
         defer.reject {}
         $state.go redirect
     defer.promise
+  clearUser: ->
+    user = null
   getUser: ->
     user
   loggedIn: ->
