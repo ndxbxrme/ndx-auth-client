@@ -12,12 +12,19 @@
   }
 
   module.factory('auth', function($http, $q, $state, $window, $injector) {
-    var checkRoles, getUserPromise, hasRole, loading, redirect, user;
+    var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prevParams, redirect, user;
     user = null;
     loading = false;
     redirect = 'dashboard';
+    current = '';
+    currentParams = null;
+    prev;
+    prevParams = null;
     getUserPromise = function() {
       var defer;
+      console.log($state);
+      current = $state.current.name;
+      currentParams = $state.params;
       loading = true;
       defer = $q.defer();
       if (user) {
@@ -152,6 +159,25 @@
         }
       },
       redirect: redirect,
+      goToNext: function() {
+        var prev;
+        if (current) {
+          $state.go(current, currentParams);
+          if (current !== prev || JSON.stringify(currentParams) !== JSON.stringify(prevParams)) {
+            prev = current;
+            return prevParams = currentParams;
+          }
+        } else {
+          return $state.go(redirect);
+        }
+      },
+      goToLast: function() {
+        if (prev) {
+          return $state.go(prev, prevParams);
+        } else {
+          return $state.go(redirect);
+        }
+      },
       logOut: function() {
         return $window.location.href = '/api/logout';
       }

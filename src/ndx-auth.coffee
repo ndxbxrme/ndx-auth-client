@@ -8,7 +8,14 @@ module.factory 'auth', ($http, $q, $state, $window, $injector) ->
   user = null
   loading = false
   redirect = 'dashboard'
+  current = ''
+  currentParams = null
+  prev
+  prevParams = null
   getUserPromise = () ->
+    console.log $state
+    current = $state.current.name
+    currentParams = $state.params
     loading = true
     defer = $q.defer()
     if user
@@ -103,6 +110,19 @@ module.factory 'auth', ($http, $q, $state, $window, $injector) ->
     if user
       checkRoles role, true
   redirect: redirect
+  goToNext: ->
+    if current
+      $state.go current, currentParams
+      if current isnt prev or JSON.stringify(currentParams) isnt JSON.stringify(prevParams)
+        prev = current
+        prevParams = currentParams
+    else
+      $state.go redirect
+  goToLast: ->
+    if prev
+      $state.go prev, prevParams
+    else
+      $state.go redirect
   logOut: ->
     $window.location.href = '/api/logout'
 .run ($rootScope, auth) ->
