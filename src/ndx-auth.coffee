@@ -13,7 +13,6 @@ module.factory 'auth', ($http, $q, $state, $window, $injector) ->
   prev = ''
   prevParams = null
   getUserPromise = () ->
-    console.log $state
     current = $state.current.name
     currentParams = $state.params
     loading = true

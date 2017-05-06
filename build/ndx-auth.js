@@ -22,7 +22,6 @@
     prevParams = null;
     getUserPromise = function() {
       var defer;
-      console.log($state);
       current = $state.current.name;
       currentParams = $state.params;
       loading = true;
