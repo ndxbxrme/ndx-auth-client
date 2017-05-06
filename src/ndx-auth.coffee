@@ -10,7 +10,7 @@ module.factory 'auth', ($http, $q, $state, $window, $injector) ->
   redirect = 'dashboard'
   current = ''
   currentParams = null
-  prev
+  prev = ''
   prevParams = null
   getUserPromise = () ->
     console.log $state

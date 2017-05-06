@@ -12,13 +12,13 @@
   }
 
   module.factory('auth', function($http, $q, $state, $window, $injector) {
-    var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prevParams, redirect, user;
+    var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, user;
     user = null;
     loading = false;
     redirect = 'dashboard';
     current = '';
     currentParams = null;
-    prev;
+    prev = '';
     prevParams = null;
     getUserPromise = function() {
       var defer;
@@ -160,7 +160,6 @@
       },
       redirect: redirect,
       goToNext: function() {
-        var prev;
         if (current) {
           $state.go(current, currentParams);
           if (current !== prev || JSON.stringify(currentParams) !== JSON.stringify(prevParams)) {
