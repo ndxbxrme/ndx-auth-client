@@ -1,17 +1,17 @@
 (function() {
   'use strict';
-  var e, error, module;
+  var e, error1, module;
 
   module = null;
 
   try {
     module = angular.module('ndx');
-  } catch (error) {
-    e = error;
+  } catch (error1) {
+    e = error1;
     module = angular.module('ndx', []);
   }
 
-  module.factory('auth', function($http, $q, $state, $window, $injector) {
+  module.factory('Auth', function($http, $q, $state, $window, $injector) {
     var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, user;
     user = null;
     loading = false;
@@ -183,10 +183,18 @@
         return $window.location.href = '/api/logout';
       }
     };
-  }).run(function($rootScope, auth) {
+  }).run(function($rootScope, $state, Auth) {
     var root;
     root = Object.getPrototypeOf($rootScope);
-    return root.auth = auth;
+    root.auth = Auth;
+    return $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
+      switch (error) {
+        case 'AUTH_REQUIRED':
+        case 'FORBIDDEN':
+        case 'UNAUTHORIZED':
+          return Auth.clearUser();
+      }
+    });
   });
 
 }).call(this);

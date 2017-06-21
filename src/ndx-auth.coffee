@@ -4,7 +4,7 @@ try
   module = angular.module 'ndx'
 catch e
   module = angular.module 'ndx', []
-module.factory 'auth', ($http, $q, $state, $window, $injector) ->
+module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
   user = null
   loading = false
   redirect = 'dashboard'
@@ -126,6 +126,10 @@ module.factory 'auth', ($http, $q, $state, $window, $injector) ->
       $state.go redirect
   logOut: ->
     $window.location.href = '/api/logout'
-.run ($rootScope, auth) ->
+.run ($rootScope, $state, Auth) ->
   root = Object.getPrototypeOf $rootScope
-  root.auth = auth
+  root.auth = Auth
+  $rootScope.$on '$stateChangeError', (event, toState, toParams, fromState, fromParams, error) ->
+    switch error
+      when 'AUTH_REQUIRED', 'FORBIDDEN', 'UNAUTHORIZED'
+        Auth.clearUser()
