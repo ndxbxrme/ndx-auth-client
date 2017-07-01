@@ -12,6 +12,7 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
   currentParams = null
   prev = ''
   prevParams = null
+  userCallbacks = []
   getUserPromise = () ->
     current = $state.current.name
     currentParams = $state.params
@@ -26,6 +27,12 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
         loading = false
         if data and data.data and data.data isnt 'error'
           user = data.data
+          for callback in userCallbacks
+            try
+              callback? user
+            catch e
+              false
+          userCallbacks = []
           if $injector.has 'socket'
             socket = $injector.get 'socket'
             socket.emit 'user', user
@@ -126,6 +133,12 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
       $state.go redirect
   logOut: ->
     $window.location.href = '/api/logout'
+  onUser: (func) ->
+    if user
+      func? user
+    else
+      if userCallbacks.indexOf(func) is -1
+        userCallbacks.push func
 .run ($rootScope, $state, Auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth

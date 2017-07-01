@@ -12,7 +12,7 @@
   }
 
   module.factory('Auth', function($http, $q, $state, $window, $injector) {
-    var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, user;
+    var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, user, userCallbacks;
     user = null;
     loading = false;
     redirect = 'dashboard';
@@ -20,6 +20,7 @@
     currentParams = null;
     prev = '';
     prevParams = null;
+    userCallbacks = [];
     getUserPromise = function() {
       var defer;
       current = $state.current.name;
@@ -31,10 +32,22 @@
         loading = false;
       } else {
         $http.post('/api/refresh-login').then(function(data) {
-          var socket;
+          var callback, error2, i, len, socket;
           loading = false;
           if (data && data.data && data.data !== 'error') {
             user = data.data;
+            for (i = 0, len = userCallbacks.length; i < len; i++) {
+              callback = userCallbacks[i];
+              try {
+                if (typeof callback === "function") {
+                  callback(user);
+                }
+              } catch (error2) {
+                e = error2;
+                false;
+              }
+            }
+            userCallbacks = [];
             if ($injector.has('socket')) {
               socket = $injector.get('socket');
               socket.emit('user', user);
@@ -181,6 +194,15 @@
       },
       logOut: function() {
         return $window.location.href = '/api/logout';
+      },
+      onUser: function(func) {
+        if (user) {
+          return typeof func === "function" ? func(user) : void 0;
+        } else {
+          if (userCallbacks.indexOf(func) === -1) {
+            return userCallbacks.push(func);
+          }
+        }
       }
     };
   }).run(function($rootScope, $state, Auth) {
