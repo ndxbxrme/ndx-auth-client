@@ -1,5 +1,4 @@
 {
-  "version": "0.1.0",
   "name": "ndx-auth",
   "description": "clientside user authentication for ndx framework apps",
   "main": "build/ndx-auth.js",
