@@ -5,6 +5,7 @@ try
 catch e
   module = angular.module 'ndx', []
 module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
+  settings = {}
   user = null
   loading = false
   redirect = 'dashboard'
@@ -85,23 +86,26 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
     truth
   getPromise: (role, isAnd) ->
     defer = $q.defer()
-    getUserPromise()
-    .then ->
-      if role
-        truth = checkRoles role, isAnd
-        if truth
-          defer.resolve user
+    if Object.prototype.toString.call(role) is '[object Boolean]' and role is false
+      defer.resolve {}
+    else
+      getUserPromise()
+      .then ->
+        if role
+          truth = checkRoles role, isAnd
+          if truth
+            defer.resolve user
+          else
+            $state.go redirect
+            defer.reject {}
         else
-          $state.go redirect
+          defer.resolve user
+      , ->
+        if not role
+          defer.resolve {}
+        else
           defer.reject {}
-      else
-        defer.resolve user
-    , ->
-      if not role
-        defer.resolve {}
-      else
-        defer.reject {}
-        $state.go redirect
+          $state.go redirect
     defer.promise
   clearUser: ->
     user = null
@@ -139,10 +143,15 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
     else
       if userCallbacks.indexOf(func) is -1
         userCallbacks.push func
-.run ($rootScope, $state, Auth) ->
+  config: (args) ->
+    angular.extend settings, args
+  settings: settings
+.run ($rootScope, $state, $transitions, Auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
-  $rootScope.$on '$stateChangeError', (event, toState, toParams, fromState, fromParams, error) ->
-    switch error
-      when 'AUTH_REQUIRED', 'FORBIDDEN', 'UNAUTHORIZED'
-        Auth.clearUser()
+  $transitions.onBefore {}, (trans) ->
+    data = trans.$to().data or {}
+    Auth.getPromise data.auth
+  $transitions.onStart {}, (trans) ->
+    title = (trans.$to().data or {}).title or ''
+    document.title = "#{Auth.settings.titlePrefix or ''}#{title}#{Auth.settings.titleSuffix or ''}"

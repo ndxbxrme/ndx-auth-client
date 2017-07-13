@@ -1,18 +1,19 @@
 (function() {
   'use strict';
-  var e, error1, module;
+  var e, error, module;
 
   module = null;
 
   try {
     module = angular.module('ndx');
-  } catch (error1) {
-    e = error1;
+  } catch (error) {
+    e = error;
     module = angular.module('ndx', []);
   }
 
   module.factory('Auth', function($http, $q, $state, $window, $injector) {
-    var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, user, userCallbacks;
+    var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, settings, user, userCallbacks;
+    settings = {};
     user = null;
     loading = false;
     redirect = 'dashboard';
@@ -32,7 +33,7 @@
         loading = false;
       } else {
         $http.post('/api/refresh-login').then(function(data) {
-          var callback, error2, i, len, socket;
+          var callback, error1, i, len, socket;
           loading = false;
           if (data && data.data && data.data !== 'error') {
             user = data.data;
@@ -42,8 +43,8 @@
                 if (typeof callback === "function") {
                   callback(user);
                 }
-              } catch (error2) {
-                e = error2;
+              } catch (error1) {
+                e = error1;
                 false;
               }
             }
@@ -128,27 +129,31 @@
       getPromise: function(role, isAnd) {
         var defer;
         defer = $q.defer();
-        getUserPromise().then(function() {
-          var truth;
-          if (role) {
-            truth = checkRoles(role, isAnd);
-            if (truth) {
-              return defer.resolve(user);
+        if (Object.prototype.toString.call(role) === '[object Boolean]' && role === false) {
+          defer.resolve({});
+        } else {
+          getUserPromise().then(function() {
+            var truth;
+            if (role) {
+              truth = checkRoles(role, isAnd);
+              if (truth) {
+                return defer.resolve(user);
+              } else {
+                $state.go(redirect);
+                return defer.reject({});
+              }
             } else {
-              $state.go(redirect);
-              return defer.reject({});
+              return defer.resolve(user);
             }
-          } else {
-            return defer.resolve(user);
-          }
-        }, function() {
-          if (!role) {
-            return defer.resolve({});
-          } else {
-            defer.reject({});
-            return $state.go(redirect);
-          }
-        });
+          }, function() {
+            if (!role) {
+              return defer.resolve({});
+            } else {
+              defer.reject({});
+              return $state.go(redirect);
+            }
+          });
+        }
         return defer.promise;
       },
       clearUser: function() {
@@ -203,19 +208,25 @@
             return userCallbacks.push(func);
           }
         }
-      }
+      },
+      config: function(args) {
+        return angular.extend(settings, args);
+      },
+      settings: settings
     };
-  }).run(function($rootScope, $state, Auth) {
+  }).run(function($rootScope, $state, $transitions, Auth) {
     var root;
     root = Object.getPrototypeOf($rootScope);
     root.auth = Auth;
-    return $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error) {
-      switch (error) {
-        case 'AUTH_REQUIRED':
-        case 'FORBIDDEN':
-        case 'UNAUTHORIZED':
-          return Auth.clearUser();
-      }
+    $transitions.onBefore({}, function(trans) {
+      var data;
+      data = trans.$to().data || {};
+      return Auth.getPromise(data.auth);
+    });
+    return $transitions.onStart({}, function(trans) {
+      var title;
+      title = (trans.$to().data || {}).title || '';
+      return document.title = "" + (Auth.settings.titlePrefix || '') + title + (Auth.settings.titleSuffix || '');
     });
   });
 
