@@ -15,8 +15,6 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
   prevParams = null
   userCallbacks = []
   getUserPromise = () ->
-    current = $state.current.name
-    currentParams = $state.params
     loading = true
     defer = $q.defer()
     if user
@@ -130,9 +128,11 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
         prevParams = currentParams
     else
       $state.go redirect
-  goToLast: ->
+  goToLast: (default, defaultParams) ->
     if prev
       $state.go prev, prevParams
+    else if default
+      $state.go default, defaultParams
     else
       $state.go redirect
   logOut: ->
@@ -146,10 +146,17 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
   config: (args) ->
     angular.extend settings, args
   settings: settings
+  current: (_current, _currentParams) ->
+    if prev isnt current and prevParams isnt currentParams
+      prev = current
+      prevParams = Object.assign {}, currentParams
+    current = _current
+    currentParams = _currentParams
 .run ($rootScope, $state, $transitions, Auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
   $transitions.onBefore {}, (trans) ->
+    Auth.current trans.$to().name, trans.$to().data
     data = trans.$to().data or {}
     Auth.getPromise data.auth
   $transitions.onStart {}, (trans) ->
