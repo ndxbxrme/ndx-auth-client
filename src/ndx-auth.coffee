@@ -128,11 +128,11 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
         prevParams = currentParams
     else
       $state.go redirect
-  goToLast: (default, defaultParams) ->
+  goToLast: (_default, defaultParams) ->
     if prev
       $state.go prev, prevParams
-    else if default
-      $state.go default, defaultParams
+    else if _default
+      $state.go _default, defaultParams
     else
       $state.go redirect
   logOut: ->
