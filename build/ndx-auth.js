@@ -235,7 +235,9 @@
     return $transitions.onStart({}, function(trans) {
       var title;
       title = (trans.$to().data || {}).title || '';
-      return document.title = "" + (Auth.settings.titlePrefix || '') + title + (Auth.settings.titleSuffix || '');
+      if (Auth.settings) {
+        return document.title = "" + (Auth.settings.titlePrefix || '') + title + (Auth.settings.titleSuffix || '');
+      }
     });
   });
 

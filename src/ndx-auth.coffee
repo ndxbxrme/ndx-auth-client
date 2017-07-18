@@ -161,4 +161,5 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
     Auth.getPromise data.auth
   $transitions.onStart {}, (trans) ->
     title = (trans.$to().data or {}).title or ''
-    document.title = "#{Auth.settings.titlePrefix or ''}#{title}#{Auth.settings.titleSuffix or ''}"
+    if Auth.settings
+      document.title = "#{Auth.settings.titlePrefix or ''}#{title}#{Auth.settings.titleSuffix or ''}"
