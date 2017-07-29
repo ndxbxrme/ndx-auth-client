@@ -33,7 +33,7 @@
         $http.post('/api/refresh-login').then(function(data) {
           var callback, error1, i, len, socket;
           loading = false;
-          if (data && data.data && data.data !== 'error') {
+          if (data && data.data && data.data !== 'error' && data.status !== 401) {
             user = data.data;
             for (i = 0, len = userCallbacks.length; i < len; i++) {
               callback = userCallbacks[i];

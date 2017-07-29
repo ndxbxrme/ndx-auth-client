@@ -24,7 +24,7 @@ module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
       $http.post '/api/refresh-login'
       .then (data) ->
         loading = false
-        if data and data.data and data.data isnt 'error'
+        if data and data.data and data.data isnt 'error' and data.status isnt 401
           user = data.data
           for callback in userCallbacks
             try
