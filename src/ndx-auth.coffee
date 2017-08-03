@@ -131,6 +131,10 @@ module.provider 'Auth', ->
       if user
         roles = $state.get(stateName)?.data?.auth
         checkRoles roles
+    canEdit: (stateName) ->
+      if user
+        roles = $state.get(stateName)?.data?.edit
+        checkRoles roles
     redirect: settings.redirect
     goToNext: ->
       if current

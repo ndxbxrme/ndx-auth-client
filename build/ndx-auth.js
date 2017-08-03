@@ -197,6 +197,13 @@
               return checkRoles(roles);
             }
           },
+          canEdit: function(stateName) {
+            var ref, ref1, roles;
+            if (user) {
+              roles = (ref = $state.get(stateName)) != null ? (ref1 = ref.data) != null ? ref1.edit : void 0 : void 0;
+              return checkRoles(roles);
+            }
+          },
           redirect: settings.redirect,
           goToNext: function() {
             if (current) {
