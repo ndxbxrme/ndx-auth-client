@@ -87,6 +87,7 @@
               key = keys[i];
               if (key === '*') {
                 root = root[0];
+                console.log('got star', root);
               } else {
                 root = getKey(root, key);
               }

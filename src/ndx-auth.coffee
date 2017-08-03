@@ -59,6 +59,7 @@ module.provider 'Auth', ->
         for key in keys
           if key is '*'
             root = root[0]
+            console.log 'got star', root
           else
             root = getKey root, key
           if root
