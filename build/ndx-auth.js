@@ -198,9 +198,9 @@
             }
           },
           canEdit: function(stateName) {
-            var ref, ref1, roles;
+            var ref, ref1, ref2, ref3, roles;
             if (user) {
-              roles = (ref = $state.get(stateName)) != null ? (ref1 = ref.data) != null ? ref1.edit : void 0 : void 0;
+              roles = ((ref = $state.get(stateName)) != null ? (ref1 = ref.data) != null ? ref1.edit : void 0 : void 0) || ((ref2 = $state.get(stateName)) != null ? (ref3 = ref2.data) != null ? ref3.auth : void 0 : void 0);
               return checkRoles(roles);
             }
           },
