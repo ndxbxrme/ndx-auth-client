@@ -5,12 +5,13 @@ try
 catch e
   module = angular.module 'ndx', []
 module.provider 'Auth', ->
+  settings =
+    redirect: 'dashboard'
+  config: (args) ->
+    angular.extend settings, args
   $get: ($http, $q, $state, $window, $injector) ->
-    console.log 'hey from auth'
-    settings = {}
     user = null
     loading = false
-    redirect = 'dashboard'
     current = ''
     currentParams = null
     prev = ''
@@ -96,7 +97,7 @@ module.provider 'Auth', ->
             if truth
               defer.resolve user
             else
-              $state.go redirect
+              $state.go settings.redirect
               defer.reject {}
           else
             defer.resolve user
@@ -105,7 +106,7 @@ module.provider 'Auth', ->
             defer.resolve {}
           else
             defer.reject {}
-            $state.go redirect
+            $state.go settings.redirect
       defer.promise
     clearUser: ->
       user = null
@@ -125,7 +126,7 @@ module.provider 'Auth', ->
       if user
         roles = $state.get(stateName)?.data?.auth
         checkRoles roles
-    redirect: redirect
+    redirect: settings.redirect
     goToNext: ->
       if current
         $state.go current, currentParams

@@ -12,14 +12,18 @@
   }
 
   module.provider('Auth', function() {
+    var settings;
+    settings = {
+      redirect: 'dashboard'
+    };
     return {
+      config: function(args) {
+        return angular.extend(settings, args);
+      },
       $get: function($http, $q, $state, $window, $injector) {
-        var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, settings, user, userCallbacks;
-        console.log('hey from auth');
-        settings = {};
+        var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, user, userCallbacks;
         user = null;
         loading = false;
-        redirect = 'dashboard';
         current = '';
         currentParams = null;
         prev = '';
@@ -140,7 +144,7 @@
                   if (truth) {
                     return defer.resolve(user);
                   } else {
-                    $state.go(redirect);
+                    $state.go(settings.redirect);
                     return defer.reject({});
                   }
                 } else {
@@ -151,7 +155,7 @@
                   return defer.resolve({});
                 } else {
                   defer.reject({});
-                  return $state.go(redirect);
+                  return $state.go(settings.redirect);
                 }
               });
             }
@@ -186,7 +190,7 @@
               return checkRoles(roles);
             }
           },
-          redirect: redirect,
+          redirect: settings.redirect,
           goToNext: function() {
             if (current) {
               $state.go(current, currentParams);
