@@ -61,7 +61,6 @@ module.provider 'Auth', ->
             for k of root
               root = root[k]
               break
-            console.log 'got star', root
           else
             root = getKey root, key
           if root

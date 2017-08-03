@@ -90,7 +90,6 @@
                   root = root[k];
                   break;
                 }
-                console.log('got star', root);
               } else {
                 root = getKey(root, key);
               }
