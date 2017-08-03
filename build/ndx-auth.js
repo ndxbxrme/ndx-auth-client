@@ -75,7 +75,7 @@
           return defer.promise;
         };
         hasRole = function(role) {
-          var allgood, getKey, i, key, keys, len, root;
+          var allgood, getKey, i, k, key, keys, len, root;
           getKey = function(root, key) {
             return root[key];
           };
@@ -86,7 +86,10 @@
             for (i = 0, len = keys.length; i < len; i++) {
               key = keys[i];
               if (key === '*') {
-                root = root[0];
+                for (k in root) {
+                  root = root[k];
+                  break;
+                }
                 console.log('got star', root);
               } else {
                 root = getKey(root, key);

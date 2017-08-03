@@ -58,7 +58,9 @@ module.provider 'Auth', ->
         root = user.roles
         for key in keys
           if key is '*'
-            root = root[0]
+            for k of root
+              root = root[k]
+              break
             console.log 'got star', root
           else
             root = getKey root, key
