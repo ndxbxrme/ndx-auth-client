@@ -5,6 +5,7 @@ try
 catch e
   module = angular.module 'ndx', []
 module.factory 'Auth', ($http, $q, $state, $window, $injector) ->
+  console.log 'hey from auth'
   settings = {}
   user = null
   loading = false

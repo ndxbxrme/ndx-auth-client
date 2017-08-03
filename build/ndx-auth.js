@@ -13,6 +13,7 @@
 
   module.factory('Auth', function($http, $q, $state, $window, $injector) {
     var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, redirect, settings, user, userCallbacks;
+    console.log('hey from auth');
     settings = {};
     user = null;
     loading = false;
