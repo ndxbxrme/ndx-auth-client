@@ -75,7 +75,7 @@
           return defer.promise;
         };
         hasRole = function(role) {
-          var allgood, getKey, i, key, keys, len, root;
+          var allgood, getKey, i, k, key, keys, len, root;
           getKey = function(root, key) {
             return root[key];
           };
@@ -85,7 +85,14 @@
             root = user.roles;
             for (i = 0, len = keys.length; i < len; i++) {
               key = keys[i];
-              root = getKey(root, key);
+              if (key === '*') {
+                for (k in root) {
+                  root = root[k];
+                  break;
+                }
+              } else {
+                root = getKey(root, key);
+              }
               if (root) {
                 allgood = true;
               } else {
