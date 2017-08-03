@@ -55,7 +55,10 @@ module.provider 'Auth', ->
       keys = role.split /\./g
       allgood = false
       if user.roles
-        root = user.roles
+        if root is '*'
+          root = root[0]
+        else
+          root = user.roles
         for key in keys
           root = getKey root, key
           if root

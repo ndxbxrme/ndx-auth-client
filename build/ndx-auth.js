@@ -82,7 +82,11 @@
           keys = role.split(/\./g);
           allgood = false;
           if (user.roles) {
-            root = user.roles;
+            if (root === '*') {
+              root = root[0];
+            } else {
+              root = user.roles;
+            }
             for (i = 0, len = keys.length; i < len; i++) {
               key = keys[i];
               root = getKey(root, key);
