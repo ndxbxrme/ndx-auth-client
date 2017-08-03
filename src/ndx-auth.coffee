@@ -121,6 +121,9 @@ module.provider 'Auth', ->
     checkAllRoles: (role) ->
       if user
         checkRoles role, true
+    isAuthorized: (stateName) ->
+      roles = $state.get(stateName)?.data?.auth
+      checkRoles roles
     redirect: redirect
     goToNext: ->
       if current

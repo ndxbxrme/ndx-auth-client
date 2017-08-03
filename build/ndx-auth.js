@@ -179,6 +179,11 @@
               return checkRoles(role, true);
             }
           },
+          isAuthorized: function(stateName) {
+            var ref, ref1, roles;
+            roles = (ref = $state.get(stateName)) != null ? (ref1 = ref.data) != null ? ref1.auth : void 0 : void 0;
+            return checkRoles(roles);
+          },
           redirect: redirect,
           goToNext: function() {
             if (current) {
