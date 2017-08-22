@@ -168,13 +168,19 @@ module.provider 'Auth', ->
         prevParams = Object.assign {}, currentParams
       current = _current
       currentParams = _currentParams
-.run ($rootScope, $state, $transitions, Auth) ->
+.run ($rootScope, $state, $transitions, $q, Auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
   $transitions.onBefore {}, (trans) ->
-    Auth.current trans.$to().name, trans.$to().data
+    defer = $q.defer()
     data = trans.$to().data or {}
     Auth.getPromise data.auth
+    .then ->
+      Auth.current trans.$to().name, trans.$to().data
+      defer.resolve()
+    , ->
+      defer.reject()
+    defer.promise
   $transitions.onStart {}, (trans) ->
     title = (trans.$to().data or {}).title or ''
     if Auth.settings

@@ -252,15 +252,21 @@
         };
       }
     };
-  }).run(function($rootScope, $state, $transitions, Auth) {
+  }).run(function($rootScope, $state, $transitions, $q, Auth) {
     var root;
     root = Object.getPrototypeOf($rootScope);
     root.auth = Auth;
     $transitions.onBefore({}, function(trans) {
-      var data;
-      Auth.current(trans.$to().name, trans.$to().data);
+      var data, defer;
+      defer = $q.defer();
       data = trans.$to().data || {};
-      return Auth.getPromise(data.auth);
+      Auth.getPromise(data.auth).then(function() {
+        Auth.current(trans.$to().name, trans.$to().data);
+        return defer.resolve();
+      }, function() {
+        return defer.reject();
+      });
+      return defer.promise;
     });
     return $transitions.onStart({}, function(trans) {
       var title;
