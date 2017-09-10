@@ -272,8 +272,9 @@
       var title;
       title = (trans.$to().data || {}).title || '';
       if (Auth.settings) {
-        return document.title = "" + (Auth.settings.titlePrefix || '') + title + (Auth.settings.titleSuffix || '');
+        document.title = "" + (Auth.settings.titlePrefix || '') + title + (Auth.settings.titleSuffix || '');
       }
+      return true;
     });
   });
 

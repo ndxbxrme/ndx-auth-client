@@ -185,3 +185,4 @@ module.provider 'Auth', ->
     title = (trans.$to().data or {}).title or ''
     if Auth.settings
       document.title = "#{Auth.settings.titlePrefix or ''}#{title}#{Auth.settings.titleSuffix or ''}"
+    true
