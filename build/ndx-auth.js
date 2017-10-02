@@ -21,7 +21,7 @@
         return angular.extend(settings, args);
       },
       $get: function($http, $q, $state, $window, $injector) {
-        var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, user, userCallbacks;
+        var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, socket, sockets, user, userCallbacks;
         user = null;
         loading = false;
         current = '';
@@ -29,6 +29,17 @@
         prev = '';
         prevParams = null;
         userCallbacks = [];
+        sockets = false;
+        socket = null;
+        if ($injector.has('socket')) {
+          sockets = true;
+          socket = $injector.get('socket');
+          socket.on('connect', function() {
+            if (user) {
+              return socket.emit('user', user);
+            }
+          });
+        }
         getUserPromise = function() {
           var defer;
           loading = true;
@@ -38,7 +49,7 @@
             loading = false;
           } else {
             $http.post('/api/refresh-login').then(function(data) {
-              var callback, error1, i, len, socket;
+              var callback, error1, i, len;
               loading = false;
               if (data && data.data && data.data !== 'error' && data.status !== 401) {
                 user = data.data;
@@ -54,12 +65,8 @@
                   }
                 }
                 userCallbacks = [];
-                if ($injector.has('socket')) {
-                  socket = $injector.get('socket');
+                if (sockets) {
                   socket.emit('user', user);
-                  socket.on('connect', function() {
-                    return socket.emit('user', user);
-                  });
                 }
                 return defer.resolve(user);
               } else {
@@ -226,6 +233,7 @@
             }
           },
           logOut: function() {
+            socket.emit('user', null);
             return $window.location.href = '/api/logout';
           },
           onUser: function(func) {

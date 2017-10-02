@@ -17,6 +17,14 @@ module.provider 'Auth', ->
     prev = ''
     prevParams = null
     userCallbacks = []
+    sockets = false
+    socket = null
+    if $injector.has 'socket'
+      sockets = true
+      socket = $injector.get 'socket'
+      socket.on 'connect', ->
+        if user
+          socket.emit 'user', user
     getUserPromise = () ->
       loading = true
       defer = $q.defer()
@@ -35,11 +43,8 @@ module.provider 'Auth', ->
               catch e
                 false
             userCallbacks = []
-            if $injector.has 'socket'
-              socket = $injector.get 'socket'
+            if sockets
               socket.emit 'user', user
-              socket.on 'connect', ->
-                socket.emit 'user', user
             defer.resolve user
           else 
             user = null
@@ -152,6 +157,7 @@ module.provider 'Auth', ->
       else
         $state.go redirect
     logOut: ->
+      socket.emit 'user', null
       $window.location.href = '/api/logout'
     onUser: (func) ->
       if user
