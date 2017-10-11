@@ -174,7 +174,7 @@ module.provider 'Auth', ->
         prevParams = Object.assign {}, currentParams
       current = _current
       currentParams = _currentParams
-.run ($rootScope, $state, $transitions, $q, Auth) ->
+.run ($rootScope, $state, $stateParams, $transitions, $q, Auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
   $transitions.onBefore {}, (trans) ->
@@ -182,7 +182,7 @@ module.provider 'Auth', ->
     data = trans.$to().data or {}
     Auth.getPromise data.auth
     .then ->
-      Auth.current trans.$to().name, trans.$to().data
+      Auth.current trans.$to().name, $stateParams
       defer.resolve()
     , ->
       defer.reject()

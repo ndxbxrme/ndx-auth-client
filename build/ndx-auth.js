@@ -260,7 +260,7 @@
         };
       }
     };
-  }).run(function($rootScope, $state, $transitions, $q, Auth) {
+  }).run(function($rootScope, $state, $stateParams, $transitions, $q, Auth) {
     var root;
     root = Object.getPrototypeOf($rootScope);
     root.auth = Auth;
@@ -269,7 +269,7 @@
       defer = $q.defer();
       data = trans.$to().data || {};
       Auth.getPromise(data.auth).then(function() {
-        Auth.current(trans.$to().name, trans.$to().data);
+        Auth.current(trans.$to().name, $stateParams);
         return defer.resolve();
       }, function() {
         return defer.reject();
