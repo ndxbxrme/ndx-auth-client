@@ -169,7 +169,7 @@ module.provider 'Auth', ->
       angular.extend settings, args
     settings: settings
     current: (_current, _currentParams) ->
-      if prev isnt current and prevParams isnt currentParams
+      if prev isnt current or prevParams isnt currentParams
         prev = current
         prevParams = Object.assign {}, currentParams
       current = _current

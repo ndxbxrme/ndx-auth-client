@@ -250,7 +250,7 @@
           },
           settings: settings,
           current: function(_current, _currentParams) {
-            if (prev !== current && prevParams !== currentParams) {
+            if (prev !== current || prevParams !== currentParams) {
               prev = current;
               prevParams = Object.assign({}, currentParams);
             }
