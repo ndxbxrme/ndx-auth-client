@@ -174,6 +174,9 @@ module.provider 'Auth', ->
         prevParams = Object.assign {}, currentParams
       current = _current
       currentParams = _currentParams
+    setTitle: (title) ->
+      title = title or $state.current.data?.title
+      document.title = "#{settings.titlePrefix or ''}#{title}#{settings.titleSuffix or ''}"
 .run ($rootScope, $state, $stateParams, $transitions, $q, Auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
@@ -190,5 +193,8 @@ module.provider 'Auth', ->
   $transitions.onStart {}, (trans) ->
     title = (trans.$to().data or {}).title or ''
     if Auth.settings
-      document.title = "#{Auth.settings.titlePrefix or ''}#{title}#{Auth.settings.titleSuffix or ''}"
+      if Auth.loggedIn()
+        Auth.setTitle title
+      else
+        Auth.setTitle 'Login'
     true

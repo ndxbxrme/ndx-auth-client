@@ -256,6 +256,11 @@
             }
             current = _current;
             return currentParams = _currentParams;
+          },
+          setTitle: function(title) {
+            var ref;
+            title = title || ((ref = $state.current.data) != null ? ref.title : void 0);
+            return document.title = "" + (settings.titlePrefix || '') + title + (settings.titleSuffix || '');
           }
         };
       }
@@ -280,7 +285,11 @@
       var title;
       title = (trans.$to().data || {}).title || '';
       if (Auth.settings) {
-        document.title = "" + (Auth.settings.titlePrefix || '') + title + (Auth.settings.titleSuffix || '');
+        if (Auth.loggedIn()) {
+          Auth.setTitle(title);
+        } else {
+          Auth.setTitle('Login');
+        }
       }
       return true;
     });
