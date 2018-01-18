@@ -135,9 +135,7 @@ module.provider 'Auth', ->
         checkRoles role, true
     isAuthorized: (stateName) ->
       if user
-        console.log Object.prototype.toString.call(stateName)
         if Object.prototype.toString.call(stateName) is '[object Array]'
-          console.log 'array'
           for sName in stateName
             roles = $state.get(sName)?.data?.auth
             if checkRoles roles

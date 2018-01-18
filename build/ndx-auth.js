@@ -201,9 +201,7 @@
           isAuthorized: function(stateName) {
             var i, len1, ref, ref1, ref2, ref3, roles, sName;
             if (user) {
-              console.log(Object.prototype.toString.call(stateName));
               if (Object.prototype.toString.call(stateName) === '[object Array]') {
-                console.log('array');
                 for (i = 0, len1 = stateName.length; i < len1; i++) {
                   sName = stateName[i];
                   roles = (ref = $state.get(sName)) != null ? (ref1 = ref.data) != null ? ref1.auth : void 0 : void 0;
