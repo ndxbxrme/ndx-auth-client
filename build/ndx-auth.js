@@ -13,6 +13,7 @@
 
   module.provider('Auth', function() {
     var settings;
+    console.log('heeey');
     settings = {
       redirect: 'dashboard'
     };
@@ -49,11 +50,11 @@
             loading = false;
           } else {
             $http.post('/api/refresh-login').then(function(data) {
-              var callback, error1, i, len;
+              var callback, error1, i, len1;
               loading = false;
               if (data && data.data && data.data !== 'error' && data.status !== 401) {
                 user = data.data;
-                for (i = 0, len = userCallbacks.length; i < len; i++) {
+                for (i = 0, len1 = userCallbacks.length; i < len1; i++) {
                   callback = userCallbacks[i];
                   try {
                     if (typeof callback === "function") {
@@ -82,7 +83,7 @@
           return defer.promise;
         };
         hasRole = function(role) {
-          var allgood, getKey, i, k, key, keys, len, root;
+          var allgood, getKey, i, k, key, keys, len1, root;
           getKey = function(root, key) {
             return root[key];
           };
@@ -90,7 +91,7 @@
           allgood = false;
           if (user.roles) {
             root = user.roles;
-            for (i = 0, len = keys.length; i < len; i++) {
+            for (i = 0, len1 = keys.length; i < len1; i++) {
               key = keys[i];
               if (key === '*') {
                 for (k in root) {
@@ -111,14 +112,14 @@
           return allgood;
         };
         checkRoles = function(role, isAnd) {
-          var getRole, i, len, r, rolesToCheck, truth;
+          var getRole, i, len1, r, rolesToCheck, truth;
           rolesToCheck = [];
           getRole = function(role) {
-            var i, len, r, results, type;
+            var i, len1, r, results, type;
             type = Object.prototype.toString.call(role);
             if (type === '[object Array]') {
               results = [];
-              for (i = 0, len = role.length; i < len; i++) {
+              for (i = 0, len1 = role.length; i < len1; i++) {
                 r = role[i];
                 results.push(getRole(r));
               }
@@ -134,7 +135,7 @@
           };
           getRole(role);
           truth = isAnd ? true : false;
-          for (i = 0, len = rolesToCheck.length; i < len; i++) {
+          for (i = 0, len1 = rolesToCheck.length; i < len1; i++) {
             r = rolesToCheck[i];
             if (isAnd) {
               truth = truth && hasRole(r);
@@ -198,10 +199,23 @@
             }
           },
           isAuthorized: function(stateName) {
-            var ref, ref1, roles;
+            var i, len1, ref, ref1, ref2, ref3, roles, sName;
             if (user) {
-              roles = (ref = $state.get(stateName)) != null ? (ref1 = ref.data) != null ? ref1.auth : void 0 : void 0;
-              return checkRoles(roles);
+              console.log(Object.prototype.toString.call(stateName));
+              if (Object.prototype.toString.call(stateName) === '[object Array]') {
+                console.log('array');
+                for (i = 0, len1 = stateName.length; i < len1; i++) {
+                  sName = stateName[i];
+                  roles = (ref = $state.get(sName)) != null ? (ref1 = ref.data) != null ? ref1.auth : void 0 : void 0;
+                  if (checkRoles(roles)) {
+                    return true;
+                  }
+                }
+                return false;
+              } else {
+                roles = (ref2 = $state.get(stateName)) != null ? (ref3 = ref2.data) != null ? ref3.auth : void 0 : void 0;
+                return checkRoles(roles);
+              }
             }
           },
           canEdit: function(stateName) {
@@ -265,6 +279,23 @@
         };
       }
     };
+  }).config(function($httpProvider) {
+    var anonId, genId;
+    genId = function(len) {
+      var chars, output;
+      output = '';
+      chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      while (len--) {
+        output += chars[Math.floor(Math.random() * chars.length)][Math.random() > 0.5 ? 'toUpperCase' : 'toLowerCase']();
+      }
+      return output;
+    };
+    if (localStorage) {
+      anonId = localStorage.getItem('anonId');
+    }
+    anonId = anonId || genId(23);
+    localStorage.setItem('anonId', anonId);
+    return $httpProvider.defaults.headers.common['Anon-Id'] = anonId;
   }).run(function($rootScope, $state, $stateParams, $transitions, $q, Auth) {
     var root;
     root = Object.getPrototypeOf($rootScope);

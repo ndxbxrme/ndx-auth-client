@@ -5,6 +5,7 @@ try
 catch e
   module = angular.module 'ndx', []
 module.provider 'Auth', ->
+  console.log 'heeey'
   settings =
     redirect: 'dashboard'
   config: (args) ->
@@ -134,8 +135,17 @@ module.provider 'Auth', ->
         checkRoles role, true
     isAuthorized: (stateName) ->
       if user
-        roles = $state.get(stateName)?.data?.auth
-        checkRoles roles
+        console.log Object.prototype.toString.call(stateName)
+        if Object.prototype.toString.call(stateName) is '[object Array]'
+          console.log 'array'
+          for sName in stateName
+            roles = $state.get(sName)?.data?.auth
+            if checkRoles roles
+              return true
+          return false
+        else
+          roles = $state.get(stateName)?.data?.auth
+          return checkRoles roles
     canEdit: (stateName) ->
       if user
         roles = $state.get(stateName)?.data?.edit or $state.get(stateName)?.data?.auth
@@ -177,6 +187,18 @@ module.provider 'Auth', ->
     setTitle: (title) ->
       title = title or $state.current.data?.title
       document.title = "#{settings.titlePrefix or ''}#{title}#{settings.titleSuffix or ''}"
+.config ($httpProvider) ->
+  genId = (len) ->
+    output = ''
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+    while len--
+      output += chars[Math.floor(Math.random() * chars.length)][if Math.random() > 0.5 then 'toUpperCase' else 'toLowerCase']()
+    output
+  if localStorage
+    anonId = localStorage.getItem 'anonId'
+  anonId = anonId or genId(23)
+  localStorage.setItem 'anonId', anonId
+  $httpProvider.defaults.headers.common['Anon-Id'] = anonId
 .run ($rootScope, $state, $stateParams, $transitions, $q, Auth) ->
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
