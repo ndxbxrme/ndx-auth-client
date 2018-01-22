@@ -5,7 +5,6 @@ try
 catch e
   module = angular.module 'ndx', []
 module.provider 'Auth', ->
-  console.log 'heeey'
   settings =
     redirect: 'dashboard'
   config: (args) ->
@@ -182,6 +181,9 @@ module.provider 'Auth', ->
         prevParams = Object.assign {}, currentParams
       current = _current
       currentParams = _currentParams
+    setPrev: (_prev, _prevParams) ->
+      prev = _prev
+      prevParams = _prevParams or null
     setTitle: (title) ->
       title = title or $state.current.data?.title
       document.title = "#{settings.titlePrefix or ''}#{title}#{settings.titleSuffix or ''}"

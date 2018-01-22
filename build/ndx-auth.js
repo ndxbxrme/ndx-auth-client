@@ -13,7 +13,6 @@
 
   module.provider('Auth', function() {
     var settings;
-    console.log('heeey');
     settings = {
       redirect: 'dashboard'
     };
@@ -268,6 +267,10 @@
             }
             current = _current;
             return currentParams = _currentParams;
+          },
+          setPrev: function(_prev, _prevParams) {
+            prev = _prev;
+            return prevParams = _prevParams || null;
           },
           setTitle: function(title) {
             var ref;
