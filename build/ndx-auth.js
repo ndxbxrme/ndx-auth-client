@@ -245,7 +245,8 @@
           },
           logOut: function() {
             socket.emit('user', null);
-            return $window.location.href = '/api/logout';
+            user = null;
+            return $http.get('/api/logout');
           },
           onUser: function(func) {
             if (user) {

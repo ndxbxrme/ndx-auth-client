@@ -1,6 +1,6 @@
 {
   "name": "ndx-auth-client",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "",
   "main": "build/ndx-auth.js",
   "scripts": {

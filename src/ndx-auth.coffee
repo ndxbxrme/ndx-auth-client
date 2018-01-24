@@ -165,7 +165,8 @@ module.provider 'Auth', ->
         $state.go redirect
     logOut: ->
       socket.emit 'user', null
-      $window.location.href = '/api/logout'
+      user = null
+      $http.get '/api/logout'
     onUser: (func) ->
       if user
         func? user
