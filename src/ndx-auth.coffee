@@ -188,19 +188,19 @@ module.provider 'Auth', ->
     setTitle: (title) ->
       title = title or $state.current.data?.title
       document.title = "#{settings.titlePrefix or ''}#{title}#{settings.titleSuffix or ''}"
-.config ($httpProvider) ->
-  genId = (len) ->
-    output = ''
-    chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-    while len--
-      output += chars[Math.floor(Math.random() * chars.length)][if Math.random() > 0.5 then 'toUpperCase' else 'toLowerCase']()
-    output
-  if localStorage
-    anonId = localStorage.getItem 'anonId'
-  anonId = anonId or genId(23)
-  localStorage.setItem 'anonId', anonId
-  $httpProvider.defaults.headers.common['Anon-Id'] = anonId
-.run ($rootScope, $state, $stateParams, $transitions, $q, Auth) ->
+.run ($rootScope, $state, $stateParams, $transitions, $q, $http, Auth) ->
+  if Auth.settings.anonymousUser
+    genId = (len) ->
+      output = ''
+      chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+      while len--
+        output += chars[Math.floor(Math.random() * chars.length)][if Math.random() > 0.5 then 'toUpperCase' else 'toLowerCase']()
+      output
+    if localStorage
+      anonId = localStorage.getItem 'anonId'
+    anonId = anonId or genId(23)
+    localStorage.setItem 'anonId', anonId
+    $http.defaults.headers.common['Anon-Id'] = anonId
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
   $transitions.onBefore {}, (trans) ->

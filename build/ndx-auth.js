@@ -281,25 +281,25 @@
         };
       }
     };
-  }).config(function($httpProvider) {
-    var anonId, genId;
-    genId = function(len) {
-      var chars, output;
-      output = '';
-      chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      while (len--) {
-        output += chars[Math.floor(Math.random() * chars.length)][Math.random() > 0.5 ? 'toUpperCase' : 'toLowerCase']();
+  }).run(function($rootScope, $state, $stateParams, $transitions, $q, $http, Auth) {
+    var anonId, genId, root;
+    if (Auth.settings.anonymousUser) {
+      genId = function(len) {
+        var chars, output;
+        output = '';
+        chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        while (len--) {
+          output += chars[Math.floor(Math.random() * chars.length)][Math.random() > 0.5 ? 'toUpperCase' : 'toLowerCase']();
+        }
+        return output;
+      };
+      if (localStorage) {
+        anonId = localStorage.getItem('anonId');
       }
-      return output;
-    };
-    if (localStorage) {
-      anonId = localStorage.getItem('anonId');
+      anonId = anonId || genId(23);
+      localStorage.setItem('anonId', anonId);
+      $http.defaults.headers.common['Anon-Id'] = anonId;
     }
-    anonId = anonId || genId(23);
-    localStorage.setItem('anonId', anonId);
-    return $httpProvider.defaults.headers.common['Anon-Id'] = anonId;
-  }).run(function($rootScope, $state, $stateParams, $transitions, $q, Auth) {
-    var root;
     root = Object.getPrototypeOf($rootScope);
     root.auth = Auth;
     $transitions.onBefore({}, function(trans) {
