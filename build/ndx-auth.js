@@ -277,6 +277,12 @@
             var ref;
             title = title || ((ref = $state.current.data) != null ? ref.title : void 0);
             return document.title = "" + (settings.titlePrefix || '') + title + (settings.titleSuffix || '');
+          },
+          regenerateAnonId: function() {
+            var anonId;
+            anonId = genId(23);
+            localStorage.setItem('anonId', anonId);
+            return $http.defaults.headers.common['Anon-Id'] = anonId;
           }
         };
       }
@@ -295,10 +301,10 @@
       };
       if (localStorage) {
         anonId = localStorage.getItem('anonId');
+        anonId = anonId || genId(23);
+        localStorage.setItem('anonId', anonId);
+        $http.defaults.headers.common['Anon-Id'] = anonId;
       }
-      anonId = anonId || genId(23);
-      localStorage.setItem('anonId', anonId);
-      $http.defaults.headers.common['Anon-Id'] = anonId;
     }
     root = Object.getPrototypeOf($rootScope);
     root.auth = Auth;

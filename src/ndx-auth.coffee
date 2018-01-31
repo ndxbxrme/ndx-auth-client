@@ -188,6 +188,11 @@ module.provider 'Auth', ->
     setTitle: (title) ->
       title = title or $state.current.data?.title
       document.title = "#{settings.titlePrefix or ''}#{title}#{settings.titleSuffix or ''}"
+    regenerateAnonId: ->
+      anonId = genId(23)
+      localStorage.setItem 'anonId', anonId
+      $http.defaults.headers.common['Anon-Id'] = anonId
+      
 .run ($rootScope, $state, $stateParams, $transitions, $q, $http, Auth) ->
   if Auth.settings.anonymousUser
     genId = (len) ->
@@ -198,9 +203,9 @@ module.provider 'Auth', ->
       output
     if localStorage
       anonId = localStorage.getItem 'anonId'
-    anonId = anonId or genId(23)
-    localStorage.setItem 'anonId', anonId
-    $http.defaults.headers.common['Anon-Id'] = anonId
+      anonId = anonId or genId(23)
+      localStorage.setItem 'anonId', anonId
+      $http.defaults.headers.common['Anon-Id'] = anonId
   root = Object.getPrototypeOf $rootScope
   root.auth = Auth
   $transitions.onBefore {}, (trans) ->
