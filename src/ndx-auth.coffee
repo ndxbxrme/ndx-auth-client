@@ -161,14 +161,16 @@ module.provider 'Auth', ->
           prev = current
           prevParams = currentParams
       else
-        $state.go redirect
+        if settings.redirect
+          $state.go settings.redirect
     goToLast: (_default, defaultParams) ->
       if prev
         $state.go prev, prevParams
       else if _default
         $state.go _default, defaultParams
       else
-        $state.go redirect
+        if settings.redirect
+          $state.go settings.redirect
     logOut: ->
       socket.emit 'user', null
       user = null

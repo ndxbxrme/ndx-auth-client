@@ -240,7 +240,9 @@
                 return prevParams = currentParams;
               }
             } else {
-              return $state.go(redirect);
+              if (settings.redirect) {
+                return $state.go(settings.redirect);
+              }
             }
           },
           goToLast: function(_default, defaultParams) {
@@ -249,7 +251,9 @@
             } else if (_default) {
               return $state.go(_default, defaultParams);
             } else {
-              return $state.go(redirect);
+              if (settings.redirect) {
+                return $state.go(settings.redirect);
+              }
             }
           },
           logOut: function() {
