@@ -25,6 +25,12 @@ module.provider 'Auth', ->
       socket.on 'connect', ->
         if user
           socket.emit 'user', user
+    genId = (len) ->
+      output = ''
+      chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+      while len--
+        output += chars[Math.floor(Math.random() * chars.length)][if Math.random() > 0.5 then 'toUpperCase' else 'toLowerCase']()
+      output
     getUserPromise = () ->
       loading = true
       defer = $q.defer()
@@ -188,6 +194,7 @@ module.provider 'Auth', ->
     setTitle: (title) ->
       title = title or $state.current.data?.title
       document.title = "#{settings.titlePrefix or ''}#{title}#{settings.titleSuffix or ''}"
+    genId: genId
     regenerateAnonId: ->
       anonId = genId(23)
       localStorage.setItem 'anonId', anonId
@@ -195,15 +202,9 @@ module.provider 'Auth', ->
       
 .run ($rootScope, $state, $stateParams, $transitions, $q, $http, Auth) ->
   if Auth.settings.anonymousUser
-    genId = (len) ->
-      output = ''
-      chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-      while len--
-        output += chars[Math.floor(Math.random() * chars.length)][if Math.random() > 0.5 then 'toUpperCase' else 'toLowerCase']()
-      output
     if localStorage
       anonId = localStorage.getItem 'anonId'
-      anonId = anonId or genId(23)
+      anonId = anonId or Auth.genId(23)
       localStorage.setItem 'anonId', anonId
       $http.defaults.headers.common['Anon-Id'] = anonId
   root = Object.getPrototypeOf $rootScope

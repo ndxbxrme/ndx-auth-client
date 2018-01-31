@@ -21,7 +21,7 @@
         return angular.extend(settings, args);
       },
       $get: function($http, $q, $state, $window, $injector) {
-        var checkRoles, current, currentParams, getUserPromise, hasRole, loading, prev, prevParams, socket, sockets, user, userCallbacks;
+        var checkRoles, current, currentParams, genId, getUserPromise, hasRole, loading, prev, prevParams, socket, sockets, user, userCallbacks;
         user = null;
         loading = false;
         current = '';
@@ -40,6 +40,15 @@
             }
           });
         }
+        genId = function(len) {
+          var chars, output;
+          output = '';
+          chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+          while (len--) {
+            output += chars[Math.floor(Math.random() * chars.length)][Math.random() > 0.5 ? 'toUpperCase' : 'toLowerCase']();
+          }
+          return output;
+        };
         getUserPromise = function() {
           var defer;
           loading = true;
@@ -278,6 +287,7 @@
             title = title || ((ref = $state.current.data) != null ? ref.title : void 0);
             return document.title = "" + (settings.titlePrefix || '') + title + (settings.titleSuffix || '');
           },
+          genId: genId,
           regenerateAnonId: function() {
             var anonId;
             anonId = genId(23);
@@ -288,20 +298,11 @@
       }
     };
   }).run(function($rootScope, $state, $stateParams, $transitions, $q, $http, Auth) {
-    var anonId, genId, root;
+    var anonId, root;
     if (Auth.settings.anonymousUser) {
-      genId = function(len) {
-        var chars, output;
-        output = '';
-        chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-        while (len--) {
-          output += chars[Math.floor(Math.random() * chars.length)][Math.random() > 0.5 ? 'toUpperCase' : 'toLowerCase']();
-        }
-        return output;
-      };
       if (localStorage) {
         anonId = localStorage.getItem('anonId');
-        anonId = anonId || genId(23);
+        anonId = anonId || Auth.genId(23);
         localStorage.setItem('anonId', anonId);
         $http.defaults.headers.common['Anon-Id'] = anonId;
       }
