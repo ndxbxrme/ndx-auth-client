@@ -41,11 +41,13 @@
           });
         }
         genId = function(len) {
-          var chars, output;
+          var chars, i, output;
           output = '';
-          chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-          while (len--) {
-            output += chars[Math.floor(Math.random() * chars.length)][Math.random() > 0.5 ? 'toUpperCase' : 'toLowerCase']();
+          chars = 'abcdef0123456789';
+          output = new Date().valueOf().toString(16);
+          i = output.length;
+          while (i++ < len) {
+            output += chars[Math.floor(Math.random() * chars.length)];
           }
           return output;
         };
@@ -58,12 +60,12 @@
             loading = false;
           } else {
             $http.post('/api/refresh-login').then(function(data) {
-              var callback, error1, i, len1;
+              var callback, error1, j, len1;
               loading = false;
               if (data && data.data && data.data !== 'error' && data.status !== 401) {
                 user = data.data;
-                for (i = 0, len1 = userCallbacks.length; i < len1; i++) {
-                  callback = userCallbacks[i];
+                for (j = 0, len1 = userCallbacks.length; j < len1; j++) {
+                  callback = userCallbacks[j];
                   try {
                     if (typeof callback === "function") {
                       callback(user);
@@ -91,7 +93,7 @@
           return defer.promise;
         };
         hasRole = function(role) {
-          var allgood, getKey, i, k, key, keys, len1, root;
+          var allgood, getKey, j, k, key, keys, len1, root;
           getKey = function(root, key) {
             return root[key];
           };
@@ -99,8 +101,8 @@
           allgood = false;
           if (user.roles) {
             root = user.roles;
-            for (i = 0, len1 = keys.length; i < len1; i++) {
-              key = keys[i];
+            for (j = 0, len1 = keys.length; j < len1; j++) {
+              key = keys[j];
               if (key === '*') {
                 for (k in root) {
                   root = root[k];
@@ -120,15 +122,15 @@
           return allgood;
         };
         checkRoles = function(role, isAnd) {
-          var getRole, i, len1, r, rolesToCheck, truth;
+          var getRole, j, len1, r, rolesToCheck, truth;
           rolesToCheck = [];
           getRole = function(role) {
-            var i, len1, r, results, type;
+            var j, len1, r, results, type;
             type = Object.prototype.toString.call(role);
             if (type === '[object Array]') {
               results = [];
-              for (i = 0, len1 = role.length; i < len1; i++) {
-                r = role[i];
+              for (j = 0, len1 = role.length; j < len1; j++) {
+                r = role[j];
                 results.push(getRole(r));
               }
               return results;
@@ -143,8 +145,8 @@
           };
           getRole(role);
           truth = isAnd ? true : false;
-          for (i = 0, len1 = rolesToCheck.length; i < len1; i++) {
-            r = rolesToCheck[i];
+          for (j = 0, len1 = rolesToCheck.length; j < len1; j++) {
+            r = rolesToCheck[j];
             if (isAnd) {
               truth = truth && hasRole(r);
             } else {
@@ -191,7 +193,7 @@
             return user;
           },
           loggedIn: function() {
-            return user || $state.current.name === 'invited' || $state.current.name === 'forgot';
+            return user || $state.current.name === 'invited' || $state.current.name === 'forgot' || $state.current.name === 'forgotResponse';
           },
           loading: function() {
             return loading;
@@ -207,11 +209,11 @@
             }
           },
           isAuthorized: function(stateName) {
-            var i, len1, ref, ref1, ref2, ref3, roles, sName;
+            var j, len1, ref, ref1, ref2, ref3, roles, sName;
             if (user) {
               if (Object.prototype.toString.call(stateName) === '[object Array]') {
-                for (i = 0, len1 = stateName.length; i < len1; i++) {
-                  sName = stateName[i];
+                for (j = 0, len1 = stateName.length; j < len1; j++) {
+                  sName = stateName[j];
                   roles = (ref = $state.get(sName)) != null ? (ref1 = ref.data) != null ? ref1.auth : void 0 : void 0;
                   if (checkRoles(roles)) {
                     return true;
@@ -294,7 +296,7 @@
           genId: genId,
           regenerateAnonId: function() {
             var anonId;
-            anonId = genId(23);
+            anonId = genId(24);
             localStorage.setItem('anonId', anonId);
             return $http.defaults.headers.common['Anon-Id'] = anonId;
           }
@@ -306,7 +308,7 @@
     if (Auth.settings.anonymousUser) {
       if (localStorage) {
         anonId = localStorage.getItem('anonId');
-        anonId = anonId || Auth.genId(23);
+        anonId = anonId || Auth.genId(24);
         localStorage.setItem('anonId', anonId);
         $http.defaults.headers.common['Anon-Id'] = anonId;
       }

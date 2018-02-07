@@ -27,9 +27,11 @@ module.provider 'Auth', ->
           socket.emit 'user', user
     genId = (len) ->
       output = ''
-      chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
-      while len--
-        output += chars[Math.floor(Math.random() * chars.length)][if Math.random() > 0.5 then 'toUpperCase' else 'toLowerCase']()
+      chars = 'abcdef0123456789'
+      output = new Date().valueOf().toString(16)
+      i = output.length
+      while i++ < len
+        output += chars[Math.floor(Math.random() * chars.length)]
       output
     getUserPromise = () ->
       loading = true
@@ -129,7 +131,7 @@ module.provider 'Auth', ->
     getUser: ->
       user
     loggedIn: ->
-      user or $state.current.name is 'invited' or $state.current.name is 'forgot'
+      user or $state.current.name is 'invited' or $state.current.name is 'forgot' or $state.current.name is 'forgotResponse'
     loading: ->
       loading
     checkRoles: (role) ->
@@ -198,7 +200,7 @@ module.provider 'Auth', ->
       document.title = "#{settings.titlePrefix or ''}#{title}#{settings.titleSuffix or ''}"
     genId: genId
     regenerateAnonId: ->
-      anonId = genId(23)
+      anonId = genId(24)
       localStorage.setItem 'anonId', anonId
       $http.defaults.headers.common['Anon-Id'] = anonId
       
@@ -206,7 +208,7 @@ module.provider 'Auth', ->
   if Auth.settings.anonymousUser
     if localStorage
       anonId = localStorage.getItem 'anonId'
-      anonId = anonId or Auth.genId(23)
+      anonId = anonId or Auth.genId(24)
       localStorage.setItem 'anonId', anonId
       $http.defaults.headers.common['Anon-Id'] = anonId
   root = Object.getPrototypeOf $rootScope
