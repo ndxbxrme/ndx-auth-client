@@ -215,6 +215,9 @@
                 for (j = 0, len1 = stateName.length; j < len1; j++) {
                   sName = stateName[j];
                   roles = (ref = $state.get(sName)) != null ? (ref1 = ref.data) != null ? ref1.auth : void 0 : void 0;
+                  if (!roles) {
+                    return true;
+                  }
                   if (checkRoles(roles)) {
                     return true;
                   }
@@ -222,6 +225,9 @@
                 return false;
               } else {
                 roles = (ref2 = $state.get(stateName)) != null ? (ref3 = ref2.data) != null ? ref3.auth : void 0 : void 0;
+                if (!roles) {
+                  return true;
+                }
                 return checkRoles(roles);
               }
             }
@@ -319,12 +325,17 @@
       var data, defer;
       defer = $q.defer();
       data = trans.$to().data || {};
-      Auth.getPromise(data.auth).then(function() {
+      if (data.auth) {
+        Auth.getPromise(data.auth).then(function() {
+          Auth.current(trans.$to().name, $stateParams);
+          return defer.resolve();
+        }, function() {
+          return defer.reject();
+        });
+      } else {
         Auth.current(trans.$to().name, $stateParams);
-        return defer.resolve();
-      }, function() {
-        return defer.reject();
-      });
+        defer.resolve();
+      }
       return defer.promise;
     });
     return $transitions.onStart({}, function(trans) {

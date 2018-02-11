@@ -145,11 +145,15 @@ module.provider 'Auth', ->
         if Object.prototype.toString.call(stateName) is '[object Array]'
           for sName in stateName
             roles = $state.get(sName)?.data?.auth
+            if not roles
+              return true
             if checkRoles roles
               return true
           return false
         else
           roles = $state.get(stateName)?.data?.auth
+          if not roles
+            return true
           return checkRoles roles
     canEdit: (stateName) ->
       if user
@@ -216,12 +220,16 @@ module.provider 'Auth', ->
   $transitions.onBefore {}, (trans) ->
     defer = $q.defer()
     data = trans.$to().data or {}
-    Auth.getPromise data.auth
-    .then ->
+    if data.auth
+      Auth.getPromise data.auth
+      .then ->
+        Auth.current trans.$to().name, $stateParams
+        defer.resolve()
+      , ->
+        defer.reject()
+    else
       Auth.current trans.$to().name, $stateParams
       defer.resolve()
-    , ->
-      defer.reject()
     defer.promise
   $transitions.onStart {}, (trans) ->
     title = (trans.$to().data or {}).title or ''
