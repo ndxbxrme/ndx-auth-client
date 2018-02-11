@@ -333,8 +333,13 @@
           return defer.reject();
         });
       } else {
-        Auth.current(trans.$to().name, $stateParams);
-        defer.resolve();
+        Auth.getPromise(null).then(function() {
+          Auth.current(trans.$to().name, $stateParams);
+          return defer.resolve();
+        }, function() {
+          Auth.current(trans.$to().name, $stateParams);
+          return defer.resolve();
+        });
       }
       return defer.promise;
     });

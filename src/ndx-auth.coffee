@@ -228,8 +228,13 @@ module.provider 'Auth', ->
       , ->
         defer.reject()
     else
-      Auth.current trans.$to().name, $stateParams
-      defer.resolve()
+      Auth.getPromise null
+      .then ->
+        Auth.current trans.$to().name, $stateParams
+        defer.resolve()
+      , ->
+        Auth.current trans.$to().name, $stateParams
+        defer.resolve()
     defer.promise
   $transitions.onStart {}, (trans) ->
     title = (trans.$to().data or {}).title or ''
