@@ -353,7 +353,7 @@
           Auth.setTitle('Login');
         }
       }
-      return true;
+      return trans;
     });
   });
 

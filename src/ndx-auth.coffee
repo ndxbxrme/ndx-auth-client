@@ -243,4 +243,4 @@ module.provider 'Auth', ->
         Auth.setTitle title
       else
         Auth.setTitle 'Login'
-    true
+    trans
