@@ -123,8 +123,8 @@ module.provider 'Auth', ->
           if not role
             defer.resolve {}
           else
-            defer.reject {}
             $state.go settings.redirect
+            defer.reject {}
       defer.promise
     clearUser: ->
       user = null

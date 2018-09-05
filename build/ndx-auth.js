@@ -179,8 +179,8 @@
                 if (!role) {
                   return defer.resolve({});
                 } else {
-                  defer.reject({});
-                  return $state.go(settings.redirect);
+                  $state.go(settings.redirect);
+                  return defer.reject({});
                 }
               });
             }
