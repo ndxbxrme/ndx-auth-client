@@ -21,11 +21,13 @@
         return angular.extend(settings, args);
       },
       $get: function($http, $q, $state, $window, $injector) {
-        var checkRoles, current, currentParams, genId, getUserPromise, hasRole, loading, prev, prevParams, socket, sockets, user, userCallbacks;
+        var checkRoles, current, currentParams, errorRedirect, errorRedirectParams, genId, getUserPromise, hasRole, loading, prev, prevParams, socket, sockets, user, userCallbacks;
         user = null;
         loading = false;
         current = '';
         currentParams = null;
+        errorRedirect = '';
+        errorRedirectParams = null;
         prev = '';
         prevParams = null;
         userCallbacks = [];
@@ -253,6 +255,17 @@
               }
             }
           },
+          goToErrorRedirect: function() {
+            if (errorRedirect) {
+              $state.go(errorRedirect, errorRedirectParams);
+              errorRedirect = '';
+              return errorRedirectParams = void 0;
+            } else {
+              if (settings.redirect) {
+                return $state.go(settings.redirect);
+              }
+            }
+          },
           goToLast: function(_default, defaultParams) {
             if (prev) {
               return $state.go(prev, prevParams);
@@ -283,12 +296,19 @@
           },
           settings: settings,
           current: function(_current, _currentParams) {
+            if (_current === 'logged-out') {
+              return;
+            }
             if (prev !== current || prevParams !== currentParams) {
               prev = current;
               prevParams = Object.assign({}, currentParams);
             }
             current = _current;
             return currentParams = _currentParams;
+          },
+          errorRedirect: function(_errorRedirect, _errorRedirectParams) {
+            errorRedirect = _errorRedirect;
+            return errorRedirectParams = _errorRedirectParams;
           },
           setPrev: function(_prev, _prevParams) {
             prev = _prev;
@@ -330,6 +350,7 @@
           Auth.current(trans.$to().name, $stateParams);
           return defer.resolve();
         }, function() {
+          Auth.errorRedirect(trans.$to().name, trans.params());
           return defer.reject();
         });
       } else {

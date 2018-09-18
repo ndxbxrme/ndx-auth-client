@@ -14,6 +14,8 @@ module.provider 'Auth', ->
     loading = false
     current = ''
     currentParams = null
+    errorRedirect = ''
+    errorRedirectParams = null
     prev = ''
     prevParams = null
     userCallbacks = []
@@ -169,6 +171,14 @@ module.provider 'Auth', ->
       else
         if settings.redirect
           $state.go settings.redirect
+    goToErrorRedirect: ->
+      if errorRedirect
+        $state.go errorRedirect, errorRedirectParams
+        errorRedirect = ''
+        errorRedirectParams = undefined
+      else
+        if settings.redirect
+          $state.go settings.redirect
     goToLast: (_default, defaultParams) ->
       if prev
         $state.go prev, prevParams
@@ -191,11 +201,16 @@ module.provider 'Auth', ->
       angular.extend settings, args
     settings: settings
     current: (_current, _currentParams) ->
+      if _current is 'logged-out'
+        return
       if prev isnt current or prevParams isnt currentParams
         prev = current
         prevParams = Object.assign {}, currentParams
       current = _current
       currentParams = _currentParams
+    errorRedirect: (_errorRedirect, _errorRedirectParams) ->
+      errorRedirect = _errorRedirect
+      errorRedirectParams = _errorRedirectParams
     setPrev: (_prev, _prevParams) ->
       prev = _prev
       prevParams = _prevParams or null
@@ -226,6 +241,7 @@ module.provider 'Auth', ->
         Auth.current trans.$to().name, $stateParams
         defer.resolve()
       , ->
+        Auth.errorRedirect trans.$to().name, trans.params()
         defer.reject()
     else
       Auth.getPromise null
