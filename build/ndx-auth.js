@@ -347,7 +347,7 @@
       data = trans.$to().data || {};
       if (data.auth) {
         Auth.getPromise(data.auth).then(function() {
-          Auth.current(trans.$to().name, $stateParams);
+          Auth.current(trans.$to().name, trans.params());
           return defer.resolve();
         }, function() {
           Auth.errorRedirect(trans.$to().name, trans.params());
@@ -355,10 +355,10 @@
         });
       } else {
         Auth.getPromise(null).then(function() {
-          Auth.current(trans.$to().name, $stateParams);
+          Auth.current(trans.$to().name, trans.params());
           return defer.resolve();
         }, function() {
-          Auth.current(trans.$to().name, $stateParams);
+          Auth.current(trans.$to().name, trans.params());
           return defer.resolve();
         });
       }

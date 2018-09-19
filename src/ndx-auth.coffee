@@ -238,7 +238,7 @@ module.provider 'Auth', ->
     if data.auth
       Auth.getPromise data.auth
       .then ->
-        Auth.current trans.$to().name, $stateParams
+        Auth.current trans.$to().name, trans.params()
         defer.resolve()
       , ->
         Auth.errorRedirect trans.$to().name, trans.params()
@@ -246,10 +246,10 @@ module.provider 'Auth', ->
     else
       Auth.getPromise null
       .then ->
-        Auth.current trans.$to().name, $stateParams
+        Auth.current trans.$to().name, trans.params()
         defer.resolve()
       , ->
-        Auth.current trans.$to().name, $stateParams
+        Auth.current trans.$to().name, trans.params()
         defer.resolve()
     defer.promise
   $transitions.onStart {}, (trans) ->
